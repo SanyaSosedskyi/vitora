@@ -6,9 +6,10 @@ from django.views.generic import UpdateView, ListView
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.db.models import Count
-from django.contrib.auth.models import User
+from accounts.models import User
 from django.urls import reverse_lazy
 from django.urls import reverse
+
 
 class BoardListView(ListView):
     model = Board
@@ -36,7 +37,7 @@ class PostListView(ListView):
     model = Post
     context_object_name = 'posts'
     template_name = 'topic_posts.html'
-    paginate_by = 2
+    paginate_by = 20
 
     def get_context_data(self, **kwargs):
         session_key = f'viewed_topic_{self.topic.pk}'

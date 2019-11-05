@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.urls import resolve
 from ..views import BoardListView, TopicListView, new_topic
 from ..models import Board, Topic, Post
-from django.contrib.auth.models import User
+from accounts.models import User
 from ..forms import NewTopicForm
 
 

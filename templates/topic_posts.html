@@ -15,41 +15,62 @@
   <div class="mb-4">
     <a href="{% url 'reply_topic' topic.board.pk topic.pk %}" class="btn btn-primary" role="button">Reply</a>
   </div>
-
-  {% for post in posts %}
-    <div id="{{post.pk}}" class="card {% if forloop.last %}mb-4{% else %}mb-2{% endif %} {% if forloop.first %}border-dark{% endif %}">
-      {% if forloop.first %}
-        <div class="card-header text-white bg-dark py-2 px-3">{{ topic.subject }}</div>
-      {% endif %}
-      <div class="card-body p-3">
-        <div class="row">
-          <div class="col-2">
-            <img src="{{ post.created_by|gravatar }}" alt="{{ post.created_by.username }}" class="w-100">
-            <small>Posts: {{ post.created_by.posts.count }}</small>
-          </div>
-          <div class="col-10">
-            <div class="row mb-3">
-              <div class="col-6">
-                <strong class="text-muted">{{ post.created_by.username }}</strong>
-              </div>
-              <div class="col-6 text-right">
-                <small class="text-muted">{{ post.created_at }}</small>
+    <div class="infinite-container">
+      {% for post in posts %}
+          <div class="infinite-item">
+            <div id="{{post.pk}}" class="card mb-2 {%if page_obj.number == 1 and forloop.first %}border-dark{% endif %}">
+              {% if page_obj.number == 1 and forloop.first %}
+                <div class="card-header text-white bg-dark py-2 px-3">{{ topic.subject }}</div>
+              {% endif %}
+              <div class="card-body p-3">
+                <div class="row">
+                  <div class="col-2">
+                    <img src="{{ post.created_by|gravatar }}" alt="{{ post.created_by.username }}" class="w-100">
+                    <small>Posts: {{ post.created_by.posts.count }}</small>
+                  </div>
+                  <div class="col-10">
+                    <div class="row mb-3">
+                      <div class="col-6">
+                        <strong class="text-muted">{{ post.created_by.username }}</strong>
+                      </div>
+                      <div class="col-6 text-right">
+                        <small class="text-muted">{{ post.created_at }}</small>
+                      </div>
+                    </div>
+                    {{ post.get_message_as_markdown }}
+                    {% if post.created_by == user %}
+                      <div class="mt-3">
+                        <a href="{% url 'edit_post' post.topic.board.pk post.topic.pk post.pk %}"
+                           class="btn btn-primary btn-sm"
+                           role="button">Edit</a>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
               </div>
             </div>
-            {{ post.get_message_as_markdown }}
-            {% if post.created_by == user %}
-              <div class="mt-3">
-                <a href="{% url 'edit_post' post.topic.board.pk post.topic.pk post.pk %}"
-                   class="btn btn-primary btn-sm"
-                   role="button">Edit</a>
-              </div>
-            {% endif %}
           </div>
-        </div>
-      </div>
+      {% endfor %}
     </div>
-  {% endfor %}
 
-  {% include 'includes/pagination.html' %}
+  <div class="loading" style="display: none;">
+    Loading...
+  </div>
 
+  {% if page_obj.has_next %}
+    <a class="btn btn-primary btn-block mb-5 text-center infinite-more-link" href="?page={{ page_obj.next_page_number }}">More</a>
+  {% endif %}
+
+
+
+{% endblock %}
+
+{% block javascript %}
+    <script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
+    <script src="{% static 'js/infinite.min.js' %}"></script>
+    <script>
+        var infinite = new Waypoint.Infinite({
+        element: $('.infinite-container')[0]
+        })
+  </script>
 {% endblock %}

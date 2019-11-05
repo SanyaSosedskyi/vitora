@@ -7,12 +7,12 @@
     <div class="col-lg-8 col-md-10 col-sm-12">
       <div class="card">
         <div class="card-body">
-          <h3 class="card-title">Sign up</h3>
-          <form method="post" novalidate>
-            {% csrf_token %}
-            {% include 'includes/form.html' %}
-            <button type="submit" class="btn btn-primary btn-block">Create an account</button>
-          </form>
+            <h3 class="text-center card-title">Sign up</h3>
+            <div class="btn-group-lg text-center">
+                <a class="btn btn-lg btn-primary" href="#">Blogger</a>
+                <a class="btn btn-lg btn-secondary" href="#">Reader</a>
+            </div>
+
         </div>
         <div class="card-footer text-muted text-center">
           Already have an account? <a href="{% url 'login' %}">Log in</a>

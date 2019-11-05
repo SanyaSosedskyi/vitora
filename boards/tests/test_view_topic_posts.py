@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.contrib.auth.models import User
+from accounts.models import User
 from django.urls import resolve, reverse
 from ..models import Board, Topic, Post
 from ..views import PostListView
