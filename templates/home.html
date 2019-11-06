@@ -1,11 +1,19 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block breadcrumb %}
   <li class="breadcrumb-item active">Boards</li>
 {% endblock %}
 
 {% block content %}
-  <table class="table">
+    {% if user.user_type == 'B' %}
+        <p>
+            <button type="button" data-url="{% url 'board_create' %}" class="btn btn-primary js-create-board">
+                <span class="glyphicon glyphicon-plus"></span>
+                New board
+            </button>
+        </p>
+    {% endif %}
+  <table id="board-table" class="table">
     <thead class="thead-inverse">
       <tr>
         <th>Board</th>
@@ -15,35 +23,18 @@
       </tr>
     </thead>
     <tbody>
-      {% for board in boards %}
-        <tr>
-          <td>
-            <a href="{% url 'board_topics' board.pk %}">{{ board.name }}</a>
-            <small class="text-muted d-block">{{ board.description }}</small>
-          </td>
-          <td class="align-middle">
-            {{ board.get_posts_count }}
-          </td>
-          <td class="align-middle">
-            {{ board.topics.count }}
-          </td>
-          <td class="align-middle">
-            {% with post=board.get_last_post %}
-              {% if post %}
-                <small>
-                  <a href="{% url 'topic_posts' board.pk post.topic.pk %}">
-                    By {{ post.created_by.username }} at {{ post.created_at }}
-                  </a>
-                </small>
-              {% else %}
-                <small class="text-muted">
-                  <em>No posts yet.</em>
-                </small>
-              {% endif %}
-            {% endwith %}
-          </td>
-        </tr>
-      {% endfor %}
+        {% include 'includes/partial_board_list.html' %}
     </tbody>
   </table>
+    <div class="modal fade" id="modal-board">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+  <script src="{% static 'js/boards.js' %}"></script>
 {% endblock %}

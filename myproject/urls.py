@@ -22,6 +22,9 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.BoardListView.as_view(), name='home'),
+    path('boards/create/', views.board_create, name='board_create'),
+    path('boards/<int:pk>/update/', views.board_update, name='board_update'),
+    path('boards/<int:pk>/delete/', views.board_delete, name='board_delete'),
     path('boards/<int:pk>/', views.TopicListView.as_view(), name='board_topics'),
     path('boards/<int:pk>/new/', views.new_topic, name='new_topic'),
     path('signup/', accounts_views.signup, name='signup'),
@@ -54,5 +57,7 @@ urlpatterns = [
     path('boards/<int:pk>/topics/<int:topic_pk>/', views.PostListView.as_view(), name='topic_posts'),
     path('boards/<int:pk>/topics/<int:topic_pk>/reply/', views.reply_topic, name='reply_topic'),
     path('boards/<int:pk>/topics/<int:topic_pk>/<int:post_pk>/edit/', views.PostUpdateView.as_view(), name='edit_post'),
-    path('settings/account/', views.UserUpdateView.as_view(), name='my_account')
+    path('settings/account/', views.UserUpdateView.as_view(), name='my_account'),
+    path('ajax/validate_username/', accounts_views.validate_username, name='validate_username'),
+
 ]

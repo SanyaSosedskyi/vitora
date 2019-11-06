@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from accounts.forms import ReaderSignUpForm, BloggerSignUpForm
 from django.views.generic import CreateView
-from accounts.models import Reader, Blogger
-
+from accounts.models import Reader, Blogger, User
+from django.http import JsonResponse
 
 def signup(request):
     return render(request, 'signup.html')
@@ -39,3 +39,9 @@ class ReaderSignUpView(CreateView):
         return redirect('home')
 
 
+def validate_username(request):
+    username = request.GET.get('username', None)
+    data = {
+        'is_taken': User.objects.filter(username__iexact=username).exists()
+    }
+    return JsonResponse(data)

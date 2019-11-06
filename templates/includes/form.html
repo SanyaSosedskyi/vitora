@@ -15,10 +15,7 @@
     {% if field.html_name == 'interests'%}
         <div class="form-check checkbox-field">
     {% endif %}
-    <div class="choices">
-
     {% render_field field class=field|input_class %}
-    </div>
     {% for error in field.errors %}
       <div class="invalid-feedback">
         {{ error }}

@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.template.loader import render_to_string
 from .models import Board, Topic, Post
-from .forms import NewTopicForm, PostForm
+from .forms import NewTopicForm, PostForm, BoardCreateForm
 from django.contrib.auth.decorators import login_required
 from django.views.generic import UpdateView, ListView
 from django.utils import timezone
@@ -9,7 +10,7 @@ from django.db.models import Count
 from accounts.models import User
 from django.urls import reverse_lazy
 from django.urls import reverse
-
+from django.http import JsonResponse
 
 class BoardListView(ListView):
     model = Board
@@ -131,3 +132,61 @@ class UserUpdateView(UpdateView):
 
     def get_object(self):
         return self.request.user
+
+@login_required
+def save_board_form(request, form, template_name):
+    data = dict()
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            data['form_is_valid'] = True
+            print(1)
+            boards = Board.objects.all()
+            data['html_board_list'] = render_to_string('includes/partial_board_list.html', {
+                'boards': boards,
+                'user': request.user
+            })
+        else:
+            data['form_is_valid'] = False
+    context = {'form': form}
+    data['html_form'] = render_to_string(template_name, context, request=request)
+    print(data)
+    return JsonResponse(data)
+
+
+@login_required
+def board_create(request):
+    if request.method == "POST":
+        form = BoardCreateForm(request.POST)
+    else:
+        form = BoardCreateForm()
+    return save_board_form(request, form, 'includes/partial_board_create.html')
+
+
+@login_required
+def board_update(request, pk):
+    board = get_object_or_404(Board, pk=pk)
+    if request.method == 'POST':
+        form = BoardCreateForm(request.POST, instance=board)
+    else:
+        form = BoardCreateForm(instance=board)
+    return save_board_form(request, form, 'includes/partial_board_update.html')
+
+
+@login_required
+def board_delete(request, pk):
+    board = get_object_or_404(Board, pk=pk)
+    data = dict()
+    if request.method == 'POST':
+        board.delete()
+        data['form_is_valid'] = True
+        boards = Board.objects.all()
+        data['html_board_list'] = render_to_string('includes/partial_board_list.html', {
+            'boards': boards,
+            'user': request.user
+        })
+    else:
+        context = {'board': board}
+        data['html_form'] = render_to_string('includes/partial_board_delete.html', context=context, request=request)
+    return JsonResponse(data)
+

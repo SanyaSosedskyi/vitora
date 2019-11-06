@@ -6,3 +6,29 @@
         <button type="submit" class="mt-4 btn btn-primary btn-block">Create an account</button>
     </form>
 {% endblock %}
+
+
+{% block javascript %}
+    <script>
+        $("#id_username").change(function () {
+          var username = $(this).val();
+
+          $.ajax({
+            url: '/ajax/validate_username/',
+            data: {
+              'username': username
+            },
+            dataType: 'json',
+            success: function (data) {
+              if (data.is_taken) {
+                  $('#id_username').css("background-color", "#ffe6e6");
+              }
+              else{
+                  $('#id_username').css("background-color", "white");
+              }
+            }
+          });
+
+        });
+    </script>
+{% endblock %}
