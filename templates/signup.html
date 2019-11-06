@@ -8,11 +8,12 @@
       <div class="card">
         <div class="card-body">
             <h3 class="text-center card-title">Sign up</h3>
-            <div class="btn-group-lg text-center">
-                <a class="btn btn-lg btn-primary" href="#">Blogger</a>
-                <a class="btn btn-lg btn-secondary" href="#">Reader</a>
-            </div>
-
+            {% block signup %}
+                <div class="btn-group-lg text-center">
+                    <a class="btn btn-lg btn-primary" href="{% url 'blogger_signup' %}">Blogger</a>
+                    <a class="btn btn-lg btn-secondary" href="{% url 'reader_signup' %}">Reader</a>
+                </div>
+            {% endblock %}
         </div>
         <div class="card-footer text-muted text-center">
           Already have an account? <a href="{% url 'login' %}">Log in</a>

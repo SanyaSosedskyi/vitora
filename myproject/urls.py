@@ -25,8 +25,8 @@ urlpatterns = [
     path('boards/<int:pk>/', views.TopicListView.as_view(), name='board_topics'),
     path('boards/<int:pk>/new/', views.new_topic, name='new_topic'),
     path('signup/', accounts_views.signup, name='signup'),
-    path('signup/blogger', accounts_views.blogger_signup, name='blogger_signup'),
-    path('signup/blogger', accounts_views.reader_signup, name='reader_signup'),
+    path('signup/blogger/', accounts_views.BloggerSignUpView.as_view(), name='blogger_signup'),
+    path('signup/reader/', accounts_views.ReaderSignUpView.as_view(), name='reader_signup'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('reset/', auth_views.PasswordResetView.as_view(

@@ -14,3 +14,13 @@ body {
 .logo a:active {
   text-decoration: none;
 }
+
+.checkbox-field{
+  height:100px;
+}
+
+input#id_is_adult.form-control{
+  display: block;
+  float: left !important;
+  width: auto;
+}

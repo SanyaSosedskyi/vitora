@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
-from .forms import SignUpForm
+from accounts.forms import ReaderSignUpForm, BloggerSignUpForm
 from django.views.generic import CreateView
 from accounts.models import Reader, Blogger
 
@@ -9,7 +9,7 @@ def signup(request):
     return render(request, 'signup.html')
 
 
-def blogger_signup(CreateView):
+class BloggerSignUpView(CreateView):
     model = Blogger
     form_class = BloggerSignUpForm
     template_name = 'blogger_signup.html'
@@ -24,7 +24,7 @@ def blogger_signup(CreateView):
         return redirect('home')
 
 
-def reader_signup(CreateView):
+class ReaderSignUpView(CreateView):
     model = Reader
     form_class = ReaderSignUpForm
     template_name = 'reader_signup.html'

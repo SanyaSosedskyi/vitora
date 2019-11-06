@@ -12,7 +12,13 @@
 {% for field in form %}
   <div class="form-group">
     {{ field.label_tag }}
+    {% if field.html_name == 'interests'%}
+        <div class="form-check checkbox-field">
+    {% endif %}
+    <div class="choices">
+
     {% render_field field class=field|input_class %}
+    </div>
     {% for error in field.errors %}
       <div class="invalid-feedback">
         {{ error }}
@@ -22,6 +28,9 @@
       <small class="form-text text-muted">
         {{ field.help_text|safe }}
       </small>
+    {% endif %}
+    {% if field.html_name == 'interests' %}
+        </div>
     {% endif %}
   </div>
 {% endfor %}
