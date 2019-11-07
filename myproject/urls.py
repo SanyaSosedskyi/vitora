@@ -21,7 +21,7 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.BoardListView.as_view(), name='home'),
+    path('', views.home, name='home'),
     path('boards/create/', views.board_create, name='board_create'),
     path('boards/<int:pk>/update/', views.board_update, name='board_update'),
     path('boards/<int:pk>/delete/', views.board_delete, name='board_delete'),

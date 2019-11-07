@@ -11,11 +11,21 @@ from accounts.models import User
 from django.urls import reverse_lazy
 from django.urls import reverse
 from django.http import JsonResponse
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
-class BoardListView(ListView):
-    model = Board
-    context_object_name = 'boards'
-    template_name = 'home.html'
+
+def home(request):
+    board_list = Board.objects.all()
+    page = request.GET.get('page', 1)
+    paginator = Paginator(board_list, 5)
+    try:
+        boards = paginator.page(page)
+    except PageNotAnInteger:
+        boards = paginator.page(1)
+    except EmptyPage:
+        boards = paginator.page(paginator.num_pages)
+
+    return render(request, 'home.html', {'boards': boards})
 
 
 class TopicListView(ListView):
@@ -133,6 +143,7 @@ class UserUpdateView(UpdateView):
     def get_object(self):
         return self.request.user
 
+
 @login_required
 def save_board_form(request, form, template_name):
     data = dict()
@@ -140,7 +151,6 @@ def save_board_form(request, form, template_name):
         if form.is_valid():
             form.save()
             data['form_is_valid'] = True
-            print(1)
             boards = Board.objects.all()
             data['html_board_list'] = render_to_string('includes/partial_board_list.html', {
                 'boards': boards,
@@ -183,10 +193,12 @@ def board_delete(request, pk):
         boards = Board.objects.all()
         data['html_board_list'] = render_to_string('includes/partial_board_list.html', {
             'boards': boards,
-            'user': request.user
+            'user': request.user,
         })
     else:
         context = {'board': board}
         data['html_form'] = render_to_string('includes/partial_board_delete.html', context=context, request=request)
     return JsonResponse(data)
+
+
 
