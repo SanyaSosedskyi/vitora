@@ -1,4 +1,3 @@
-from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from .models import Board, Topic, Post
@@ -15,6 +14,10 @@ from django.http import JsonResponse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib import messages
 from django.contrib.messages import get_messages
+from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse
+from weasyprint import HTML
+import csv
 
 
 def add_board_action_to_session(request, message):
@@ -23,6 +26,39 @@ def add_board_action_to_session(request, message):
     else:
         request.session['board_actions'] = []
     request.session.modified = True
+
+
+def export_users_csv(request, pk, topic_pk):
+    response = HttpResponse(content_type="text/csv")
+    response['Content-Disposition'] = 'attachment; filename="users.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Author', 'Message', 'Date'])
+
+    posts = Post.objects.filter(topic=Topic.objects.get(pk=topic_pk)).values_list('topic', 'message', 'created_at')
+
+    for post in posts:
+        writer.writerow(post)
+
+    return response
+
+
+def html_to_pdf_view(request, pk, topic_pk):
+    topic = Topic.objects.get(pk=topic_pk)
+    posts = Post.objects.filter(topic=topic)
+    board = topic.board
+    html_string = render_to_string('includes/topic_posts_to_pdf.html', {'posts': posts, 'topic':topic, 'board':board})
+
+    html = HTML(string=html_string)
+    html.write_pdf(target='/tmp/mypdf.pdf')
+
+    fs = FileSystemStorage('/tmp')
+    with fs.open('mypdf.pdf') as pdf:
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="mypdf.pdf"'
+        return response
+
+    return response
 
 
 def home(request):

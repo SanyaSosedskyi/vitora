@@ -14,6 +14,10 @@
             {% include 'includes/form.html' %}
             <button type="submit" class="btn btn-primary btn-block">Log in</button>
           </form>
+        <script src='https://www.google.com/recaptcha/api.js'></script>
+        <div class="g-recaptcha" data-sitekey="6LeylsEUAAAAAEzfAEFEKN28IQF1S9nHMUSMP5xz"></div>
+
+        <button type="submit" class="btn btn-primary">Post</button>
         <div class="card-footer text-muted text-center">
           New to Django Boards? <a href="{% url 'signup' %}">Sign up</a>
         </div>
@@ -26,4 +30,3 @@
     </div>
   </div>
 {% endblock %}
-
