@@ -1,3 +1,4 @@
+from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from .models import Board, Topic, Post
@@ -12,6 +13,8 @@ from django.urls import reverse_lazy
 from django.urls import reverse
 from django.http import JsonResponse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.contrib import messages
+from django.contrib.messages import get_messages
 
 
 def home(request):
@@ -25,7 +28,7 @@ def home(request):
     except EmptyPage:
         boards = paginator.page(paginator.num_pages)
 
-    return render(request, 'home.html', {'boards': boards})
+    return render(request, 'home.html', {'boards': boards, 'page': page})
 
 
 class TopicListView(ListView):
@@ -140,63 +143,99 @@ class UserUpdateView(UpdateView):
     template_name = 'my_account.html'
     success_url = reverse_lazy('my_account')
 
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Your account was updated successfully!')
+        return redirect('my_account')
+
+    def form_invalid(self, form):
+        messages.warning(self.request, 'Please correct the error below')
+        return redirect('my_account')
+
     def get_object(self):
         return self.request.user
 
 
 @login_required
-def save_board_form(request, form, template_name):
+def save_board_form(request, form, template_name, messagess, page):
     data = dict()
     if request.method == 'POST':
         if form.is_valid():
             form.save()
             data['form_is_valid'] = True
-            boards = Board.objects.all()
-            data['html_board_list'] = render_to_string('includes/partial_board_list.html', {
+            board_list = Board.objects.all()
+            paginator = Paginator(board_list, 5)
+            try:
+                boards = paginator.page(page)
+            except PageNotAnInteger:
+                boards = paginator.page(1)
+            except EmptyPage:
+                boards = paginator.page(paginator.num_pages)
+            data['contentBlock'] = render_to_string('home.html', {
                 'boards': boards,
-                'user': request.user
+                'user': request.user,
+                'messages': messagess,
+                'page': page
             })
         else:
             data['form_is_valid'] = False
-    context = {'form': form}
+    context = {'form': form, 'page': page}
     data['html_form'] = render_to_string(template_name, context, request=request)
-    print(data)
     return JsonResponse(data)
 
 
 @login_required
-def board_create(request):
+def board_create(request, page):
     if request.method == "POST":
         form = BoardCreateForm(request.POST)
+        messages.success(request, 'The board has been created!')
+        messagess = get_messages(request)
     else:
         form = BoardCreateForm()
-    return save_board_form(request, form, 'includes/partial_board_create.html')
+        messagess = None
+
+    return save_board_form(request, form, 'includes/partial_board_create.html', messagess, page)
 
 
 @login_required
-def board_update(request, pk):
+def board_update(request, pk, page):
     board = get_object_or_404(Board, pk=pk)
     if request.method == 'POST':
         form = BoardCreateForm(request.POST, instance=board)
+        messages.success(request, 'The board has been created!')
+        messagess = get_messages(request)
     else:
         form = BoardCreateForm(instance=board)
-    return save_board_form(request, form, 'includes/partial_board_update.html')
+        messagess = None
+    return save_board_form(request, form, 'includes/partial_board_update.html', messagess, page)
 
 
 @login_required
-def board_delete(request, pk):
+def board_delete(request, pk, page):
+    print(page)
     board = get_object_or_404(Board, pk=pk)
     data = dict()
     if request.method == 'POST':
         board.delete()
         data['form_is_valid'] = True
-        boards = Board.objects.all()
-        data['html_board_list'] = render_to_string('includes/partial_board_list.html', {
+        board_list = Board.objects.all()
+        paginator = Paginator(board_list, 5)
+        try:
+            boards = paginator.get_page(page)
+        except PageNotAnInteger:
+            boards = paginator.get_page(1)
+        except EmptyPage:
+            boards = paginator.page(paginator.num_pages)
+        messages.success(request, 'The board has been deleted!')
+        messagess = get_messages(request)
+        data['contentBlock'] = render_to_string('home.html', {
             'boards': boards,
             'user': request.user,
+            'messages': messagess,
+            'page': page
         })
     else:
-        context = {'board': board}
+        context = {'board': board, 'page': page}
         data['html_form'] = render_to_string('includes/partial_board_delete.html', context=context, request=request)
     return JsonResponse(data)
 

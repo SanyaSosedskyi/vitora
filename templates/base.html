@@ -46,8 +46,11 @@
           {% block breadcrumb %}
           {% endblock %}
         </ol>
-        {% block content %}
-        {% endblock %}
+        <div id="content-block">
+            {% block content %}
+            {% endblock %}
+        </div>
+
       </div>
     {% endblock body %}
     <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>

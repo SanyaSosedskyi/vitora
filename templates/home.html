@@ -7,7 +7,7 @@
 {% block content %}
     {% if user.user_type == 'B' %}
         <p>
-            <button type="button" data-url="{% url 'board_create' %}" class="btn btn-primary js-create-board">
+            <button type="button" data-url="{% url 'board_create' page%}" class="btn btn-primary js-create-board">
                 <span class="glyphicon glyphicon-plus"></span>
                 New board
             </button>

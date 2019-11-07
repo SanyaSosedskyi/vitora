@@ -1,4 +1,4 @@
-<form method="post" action="{% url 'board_update' form.instance.pk %}" class="js-board-update-form">
+<form method="post" action="{% url 'board_update' form.instance.pk page%}" class="js-board-update-form">
   {% csrf_token %}
     <div class="modal-header">
         <h4 class="modal-title">Update board</h4>

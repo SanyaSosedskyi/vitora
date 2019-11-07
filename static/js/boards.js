@@ -8,7 +8,7 @@ $(function () {
             dataType: 'json',
             success: function (data) {
                 if (data.form_is_valid) {
-                    $("#board-table tbody").html(data.html_board_list);
+                    $("body").html(data.contentBlock);
                     $('#modal-board').modal("hide");
                 } else {
                     $("#modal-board .modal-content").html(data.html_form);

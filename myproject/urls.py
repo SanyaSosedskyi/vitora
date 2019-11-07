@@ -22,9 +22,9 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
-    path('boards/create/', views.board_create, name='board_create'),
-    path('boards/<int:pk>/update/', views.board_update, name='board_update'),
-    path('boards/<int:pk>/delete/', views.board_delete, name='board_delete'),
+    path('boards/create/<str:page>/', views.board_create, name='board_create'),
+    path('boards/<int:pk>/update/<str:page>/', views.board_update, name='board_update'),
+    path('boards/<int:pk>/delete/<str:page>/', views.board_delete, name='board_delete'),
     path('boards/<int:pk>/', views.TopicListView.as_view(), name='board_topics'),
     path('boards/<int:pk>/new/', views.new_topic, name='new_topic'),
     path('signup/', accounts_views.signup, name='signup'),

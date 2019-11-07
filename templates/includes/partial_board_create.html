@@ -1,4 +1,4 @@
-<form method="post" action="{% url 'board_create' %}" class="js-board-create-form">
+<form method="post" action="{% url 'board_create' page%}" class="js-board-create-form">
   {% csrf_token %}
   <div class="modal-header">
       <h4 class="modal-title">Create a new board</h4>
