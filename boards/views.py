@@ -17,6 +17,14 @@ from django.contrib import messages
 from django.contrib.messages import get_messages
 
 
+def add_board_action_to_session(request, message):
+    if request.session['board_actions']:
+        request.session['board_actions'].append(message)
+    else:
+        request.session['board_actions'] = []
+    request.session.modified = True
+
+
 def home(request):
     board_list = Board.objects.all()
     page = request.GET.get('page', 1)
@@ -27,7 +35,6 @@ def home(request):
         boards = paginator.page(1)
     except EmptyPage:
         boards = paginator.page(paginator.num_pages)
-
     return render(request, 'home.html', {'boards': boards, 'page': page})
 
 
@@ -190,6 +197,7 @@ def board_create(request, page):
         form = BoardCreateForm(request.POST)
         messages.success(request, 'The board has been created!')
         messagess = get_messages(request)
+        print(form)
     else:
         form = BoardCreateForm()
         messagess = None

@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block content %}
+    <h2 class="text-center text-dark">Last actions</h2>
     {% if user.user_type == 'B' %}
         <p>
             <button type="button" data-url="{% url 'board_create' page%}" class="btn btn-primary js-create-board">

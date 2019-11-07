@@ -1,3 +1,5 @@
 from django.contrib import admin
+from accounts.models import Reader, Blogger
 
-# Register your models here.
+admin.site.register(Reader)
+admin.site.register(Blogger)

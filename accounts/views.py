@@ -5,6 +5,7 @@ from django.views.generic import CreateView
 from accounts.models import Reader, Blogger, User
 from django.http import JsonResponse
 
+
 def signup(request):
     return render(request, 'signup.html')
 
@@ -20,7 +21,7 @@ class BloggerSignUpView(CreateView):
 
     def form_valid(self, form):
         user = form.save()
-        login(self.request, user)
+        login(self.request, user, backend='django.contrib.auth.backends.ModelBackend')
         return redirect('home')
 
 

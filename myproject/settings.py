@@ -109,8 +109,8 @@ DATABASES = {
 
 
 AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
     'social_core.backends.github.GithubOAuth2',
-    'social_core.backends.vk.VKOAuth2',
     'social_core.backends.facebook.FacebookOAuth2',
 )
 AUTH_PASSWORD_VALIDATORS = [
