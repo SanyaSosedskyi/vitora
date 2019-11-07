@@ -25,7 +25,6 @@ SECRET_KEY = 'v3f_axfg0#ydbnzkqp1-+60pf&2v=#096a#qftk$2tl_gd)psp'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 ALLOWED_HOSTS = ["*"]
 
 
@@ -43,7 +42,8 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'accounts',
     'django.contrib.sites',
-    'django.contrib.flatpages'
+    'django.contrib.flatpages',
+    'social_django'
 ]
 
 SITE_ID = 1
@@ -55,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'myproject.urls'
@@ -82,6 +83,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -104,6 +107,12 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.vk.VKOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
+)
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -146,3 +155,8 @@ LOGIN_REDIRECT_URL = 'home'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 LOGIN_URL = 'login'
 AUTH_USER_MODEL = 'accounts.User'
+
+SOCIAL_AUTH_GITHUB_KEY = "5e7b0b6ffe336e4bd576"
+SOCIAL_AUTH_GITHUB_SECRET = "157576f23e6c6c02f96faed4b98c20b396ec87cf"
+SOCIAL_AUTH_FACEBOOK_KEY = 445123542656154
+SOCIAL_AUTH_FACEBOOK_SECRET = '548f997bd340c11aa1171038a78195be'

@@ -33,6 +33,7 @@ urlpatterns = [
     path('signup/reader/', accounts_views.ReaderSignUpView.as_view(), name='reader_signup'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('oauth/', include('social_django.urls', namespace='social')),
     path('reset/', auth_views.PasswordResetView.as_view(
         template_name='password_reset.html',
         email_template_name='password_reset_email.html',
