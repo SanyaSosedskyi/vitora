@@ -212,7 +212,6 @@ def board_update(request, pk, page):
 
 @login_required
 def board_delete(request, pk, page):
-    print(page)
     board = get_object_or_404(Board, pk=pk)
     data = dict()
     if request.method == 'POST':

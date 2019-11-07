@@ -1,4 +1,5 @@
 {% load static %}
+{% load flatpages %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -52,6 +53,14 @@
         </div>
 
       </div>
+    <footer class="fixed-bottom page-footer font-small bg-light d-flex justify-content-around">
+        {% get_flatpages as flatpages %}
+        {% for page in flatpages%}
+            <div class="mx-2">
+            <a href="pages{{ page.url }}"> {{ page.title }}</a>
+        </div>
+        {% endfor %}
+    </footer>
     {% endblock body %}
     <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
     <script src="{% static 'js/popper.min.js' %}"></script>

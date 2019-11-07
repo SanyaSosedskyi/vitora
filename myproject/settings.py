@@ -42,8 +42,11 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'widget_tweaks',
     'accounts',
+    'django.contrib.sites',
+    'django.contrib.flatpages'
 ]
 
+SITE_ID = 1
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
