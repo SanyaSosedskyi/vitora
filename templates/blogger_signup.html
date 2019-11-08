@@ -1,9 +1,11 @@
 {% extends 'signup.html' %}
 
 {% block signup %}
+    {% include 'includes/messages.html' %}
     <form method="post" novalidate>
         {% csrf_token %}
         {% include 'includes/form.html' %}
+        <div class="g-recaptcha" data-sitekey="6LeylsEUAAAAAEzfAEFEKN28IQF1S9nHMUSMP5xz"></div>
         <button type="submit" class="mt-4 btn btn-primary btn-block">Create an account</button>
     </form>
 {% endblock %}
