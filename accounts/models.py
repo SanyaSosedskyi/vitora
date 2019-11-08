@@ -3,12 +3,23 @@ from django.contrib.auth.models import AbstractUser
 from django.dispatch import receiver
 
 
+class Photo(models.Model):
+    file = models.ImageField()
+    description = models.CharField(max_length=255, blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'photo'
+        verbose_name_plural = 'photos'
+
+
 class User(AbstractUser):
     TYPE_CHOICES = (
         ('R', 'Reader'),
         ('B', 'Blogger')
     )
     user_type = models.CharField(max_length=1, choices=TYPE_CHOICES)
+    photo = models.ForeignKey(Photo, null=True, blank=True, on_delete=models.CASCADE)
 
 
 class CategoryDictionary(models.Model):

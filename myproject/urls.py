@@ -18,6 +18,8 @@ from django.urls import path, re_path, include
 from accounts import views as accounts_views
 from boards import views
 from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -61,6 +63,9 @@ urlpatterns = [
     path('boards/<int:pk>/topics/<int:topic_pk>/<int:post_pk>/edit/', views.PostUpdateView.as_view(), name='edit_post'),
     path('settings/account/', views.UserUpdateView.as_view(), name='my_account'),
     path('ajax/validate_username/', accounts_views.validate_username, name='validate_username'),
-    path('boards/<int:pk>/topics/<int:topic_pk>/to_pdf', views.html_to_pdf_view, name="to_pdf"),
-    path('boards/<int:pk>/topics/<int:topic_pk>/to_csv', views.export_users_csv, name="to_csv")
+    path('boards/<int:pk>/topics/<int:topic_pk>/to_pdf/', views.html_to_pdf_view, name="to_pdf"),
+    path('boards/<int:pk>/topics/<int:topic_pk>/to_csv/', views.export_users_csv, name="to_csv"),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

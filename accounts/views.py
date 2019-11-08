@@ -11,6 +11,7 @@ import urllib.parse
 import urllib.request
 import json
 from django.contrib import messages
+from django.views.generic import View
 
 
 def signup(request):

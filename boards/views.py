@@ -18,14 +18,7 @@ from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 from weasyprint import HTML
 import csv
-
-
-def add_board_action_to_session(request, message):
-    if request.session['board_actions']:
-        request.session['board_actions'].append(message)
-    else:
-        request.session['board_actions'] = []
-    request.session.modified = True
+import json
 
 
 def export_users_csv(request, pk, topic_pk):
@@ -58,11 +51,9 @@ def html_to_pdf_view(request, pk, topic_pk):
         response['Content-Disposition'] = 'attachment; filename="mypdf.pdf"'
         return response
 
-    return response
-
 
 def home(request):
-    board_list = Board.objects.all()
+    board_list = Board.objects.filter(is_active=True)
     page = request.GET.get('page', 1)
     paginator = Paginator(board_list, 5)
     try:
@@ -206,7 +197,7 @@ def save_board_form(request, form, template_name, messagess, page):
         if form.is_valid():
             form.save()
             data['form_is_valid'] = True
-            board_list = Board.objects.all()
+            board_list = Board.objects.filter(is_active=True)
             paginator = Paginator(board_list, 5)
             try:
                 boards = paginator.page(page)
@@ -261,7 +252,7 @@ def board_delete(request, pk, page):
     if request.method == 'POST':
         board.delete()
         data['form_is_valid'] = True
-        board_list = Board.objects.all()
+        board_list = Board.objects.filter(is_active=True)
         paginator = Paginator(board_list, 5)
         try:
             boards = paginator.get_page(page)
@@ -281,6 +272,3 @@ def board_delete(request, pk, page):
         context = {'board': board, 'page': page}
         data['html_form'] = render_to_string('includes/partial_board_delete.html', context=context, request=request)
     return JsonResponse(data)
-
-
-

@@ -1,5 +1,8 @@
 from django import forms
 from .models import Topic, Post, Board
+from django.core.files import File
+from PIL import Image
+from accounts.models import User, Photo
 
 
 class NewTopicForm(forms.ModelForm):
