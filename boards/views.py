@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
-from .models import Board, Topic, Post
+from .models import Board, Topic, Post, BoardActions
 from .forms import NewTopicForm, PostForm, BoardCreateForm
 from django.contrib.auth.decorators import login_required
 from django.views.generic import UpdateView, ListView
@@ -55,6 +55,7 @@ def html_to_pdf_view(request, pk, topic_pk):
 def home(request):
     board_list = Board.objects.filter(is_active=True)
     page = request.GET.get('page', 1)
+    actions = BoardActions.objects.all().order_by('-created_at')[:3]
     paginator = Paginator(board_list, 5)
     try:
         boards = paginator.page(page)
@@ -62,7 +63,7 @@ def home(request):
         boards = paginator.page(1)
     except EmptyPage:
         boards = paginator.page(paginator.num_pages)
-    return render(request, 'home.html', {'boards': boards, 'page': page})
+    return render(request, 'home.html', {'boards': boards, 'page': page, 'actions': actions})
 
 
 class TopicListView(ListView):
@@ -191,11 +192,13 @@ class UserUpdateView(UpdateView):
 
 
 @login_required
-def save_board_form(request, form, template_name, messagess, page):
+def save_board_form(request, form, template_name, messagess, page, action):
     data = dict()
     if request.method == 'POST':
         if form.is_valid():
             form.save()
+            BoardActions.objects.create(message=action)
+            actions = BoardActions.objects.all().order_by('-created_at')[:3]
             data['form_is_valid'] = True
             board_list = Board.objects.filter(is_active=True)
             paginator = Paginator(board_list, 5)
@@ -209,7 +212,8 @@ def save_board_form(request, form, template_name, messagess, page):
                 'boards': boards,
                 'user': request.user,
                 'messages': messagess,
-                'page': page
+                'page': page,
+                'actions': actions
             })
         else:
             data['form_is_valid'] = False
@@ -224,12 +228,13 @@ def board_create(request, page):
         form = BoardCreateForm(request.POST)
         messages.success(request, 'The board has been created!')
         messagess = get_messages(request)
-        print(form)
+        action = f'{request.POST.get("name")} has been created!'
     else:
         form = BoardCreateForm()
         messagess = None
+        action = ''
 
-    return save_board_form(request, form, 'includes/partial_board_create.html', messagess, page)
+    return save_board_form(request, form, 'includes/partial_board_create.html', messagess, page, action)
 
 
 @login_required
@@ -237,12 +242,14 @@ def board_update(request, pk, page):
     board = get_object_or_404(Board, pk=pk)
     if request.method == 'POST':
         form = BoardCreateForm(request.POST, instance=board)
-        messages.success(request, 'The board has been created!')
+        messages.success(request, 'The board has been updated!')
         messagess = get_messages(request)
+        action = f'{request.POST.get("name")} has been updated!'
     else:
         form = BoardCreateForm(instance=board)
         messagess = None
-    return save_board_form(request, form, 'includes/partial_board_update.html', messagess, page)
+        action = ''
+    return save_board_form(request, form, 'includes/partial_board_update.html', messagess, page, action)
 
 
 @login_required
@@ -251,8 +258,10 @@ def board_delete(request, pk, page):
     data = dict()
     if request.method == 'POST':
         board.delete()
+        BoardActions.objects.create(message=f'{board.name} has been deleted!')
         data['form_is_valid'] = True
         board_list = Board.objects.filter(is_active=True)
+        actions = BoardActions.objects.all().order_by('-created_at')[:3]
         paginator = Paginator(board_list, 5)
         try:
             boards = paginator.get_page(page)
@@ -266,7 +275,8 @@ def board_delete(request, pk, page):
             'boards': boards,
             'user': request.user,
             'messages': messagess,
-            'page': page
+            'page': page,
+            'actions': actions
         })
     else:
         context = {'board': board, 'page': page}

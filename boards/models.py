@@ -6,6 +6,14 @@ from markdown import markdown
 import math
 
 
+class BoardActions(models.Model):
+    message = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.message
+
+
 class Board(models.Model):
     name = models.CharField(max_length=30, unique=True)
     description = models.CharField(max_length=100)

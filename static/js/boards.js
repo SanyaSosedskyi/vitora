@@ -1,5 +1,5 @@
 $(function () {
-    var saveForm = function () {
+    var saveForm = (function () {
         var form = $(this);
         $.ajax({
             url: form.attr("action"),
@@ -9,14 +9,17 @@ $(function () {
             success: function (data) {
                 if (data.form_is_valid) {
                     $("body").html(data.contentBlock);
+                    $('#userMenu').dropdown();
+                    $('body').css({'padding-right':'0', 'overflowY':'auto'});
                     $('#modal-board').modal("hide");
+
                 } else {
                     $("#modal-board .modal-content").html(data.html_form);
                 }
             }
         });
         return false;
-    };
+    });
 
     var loadForm = function () {
         var btn = $(this);
@@ -29,6 +32,7 @@ $(function () {
             },
             success: function (data) {
                 $("#modal-board .modal-content").html(data.html_form);
+                $('body').css({'padding-right':'0', 'overflowY':'auto'});
                 }
             });
     };
@@ -44,5 +48,4 @@ $(function () {
     //delete board
     $("#board-table").on("click", ".js-delete-board", loadForm);
     $("#modal-board").on("submit", ".js-board-delete-form", saveForm);
-
 });
