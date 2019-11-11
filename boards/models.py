@@ -59,6 +59,11 @@ class Topic(models.Model):
         return self.posts.order_by('-created_at')[:10]
 
 
+class GalleryImages(models.Model):
+    image = models.ImageField(upload_to='gallery_topics')
+    topic = models.ForeignKey(Topic, related_name='gallery_images', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
 class Post(models.Model):
     message = models.TextField(max_length=4000)
     topic = models.ForeignKey(Topic, related_name='posts', on_delete=models.CASCADE)

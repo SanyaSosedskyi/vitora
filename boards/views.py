@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
-from .models import Board, Topic, Post, BoardActions
-from .forms import NewTopicForm, PostForm, BoardCreateForm, UserUpdateForm
+from .models import Board, Topic, Post, BoardActions, GalleryImages
+from .forms import NewTopicForm, PostForm, BoardCreateForm, UserUpdateForm, GalleryImagesForm
 from django.contrib.auth.decorators import login_required
 from django.views.generic import UpdateView, ListView
 from django.utils import timezone
@@ -309,3 +309,18 @@ def delete_photo(request):
     Photo.objects.get(pk=request.user.photo.pk).delete()
     return redirect('my_account')
     
+
+def gallery_images(request, pk, topic_pk):
+    topic = Topic.objects.get(pk=topic_pk)
+    if request.method == 'POST':
+        form = GalleryImagesForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.save(commit=False)
+            image.topic = topic
+            image.save()
+        else:
+            form = GalleryImagesForm()
+    else:
+        form = GalleryImagesForm()
+    images = GalleryImages.objects.filter(topic=topic).order_by('-created_at')
+    return render(request, 'gallery_images.html', {'images':images, 'topic':topic, 'form':form})

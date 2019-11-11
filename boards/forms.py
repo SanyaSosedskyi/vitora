@@ -1,10 +1,16 @@
 from django import forms
-from .models import Topic, Post, Board
+from .models import Topic, Post, Board, GalleryImages
 from django.core.files import File
 from PIL import Image
 from accounts.models import User, Photo
 
 
+
+class GalleryImagesForm(forms.ModelForm):
+    image = forms.FileField(widget=forms.FileInput)
+    class Meta:
+        model = GalleryImages
+        fields = ('image',)
 class UserUpdateForm(forms.ModelForm):
 
     class Meta:

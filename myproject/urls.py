@@ -65,7 +65,10 @@ urlpatterns = [
     path('ajax/validate_username/', accounts_views.validate_username, name='validate_username'),
     path('boards/<int:pk>/topics/<int:topic_pk>/to_pdf/', views.html_to_pdf_view, name="to_pdf"),
     path('boards/<int:pk>/topics/<int:topic_pk>/to_csv/', views.export_users_csv, name="to_csv"),
-    path('settings/account/delete-photo', views.delete_photo, name='delete_photo')
+    path('settings/account/delete-photo', views.delete_photo, name='delete_photo'),
+    path('boards/<int:pk>/topics/<int:topic_pk>/gallery/',
+         views.gallery_images, name="gallery_images"),
+
 ]
 
 if settings.DEBUG:

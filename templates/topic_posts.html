@@ -16,6 +16,8 @@
     <a href="{% url 'reply_topic' topic.board.pk topic.pk %}" class="btn btn-primary" role="button">Reply</a>
     <a href="{% url 'to_pdf' topic.board.pk topic.pk %}" class="btn btn-success" role="button">To PDF</a>
     <a href="{% url 'to_csv' topic.board.pk topic.pk %}" class="btn btn-success" role="button">To CSV</a>
+    <a href="{% url 'gallery_images' topic.board.pk topic.pk %}" class="btn btn-info" role="button">Gallery</a>
+
 
   </div>
     <div class="infinite-container">
