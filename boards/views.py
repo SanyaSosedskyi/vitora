@@ -19,6 +19,8 @@ from django.http import HttpResponse
 from weasyprint import HTML
 import csv
 import json
+from PIL import Image
+
 
 
 def export_users_csv(request, pk, topic_pk):
@@ -185,6 +187,15 @@ class UserUpdateView(UpdateView):
 
     def form_valid(self, form):
         photo = Photo.objects.create(file=self.request.FILES['photo'], description='photo')
+        x = float(self.request.POST.get('x'))
+        y = float(self.request.POST.get('y'))
+        h = float(self.request.POST.get('height'))
+        w = float(self.request.POST.get('width'))
+
+        image = Image.open(photo.file)
+        cropped_image = image.crop((x, y, w+x, h+y))
+        resized_image = cropped_image.resize((200, 200), Image.ANTIALIAS)
+        resized_image.save(photo.file.path, "PNG")
         self.request.user.photo = photo
         form.save()
         messages.success(
