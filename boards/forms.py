@@ -5,6 +5,13 @@ from PIL import Image
 from accounts.models import User, Photo
 
 
+class UserUpdateForm(forms.ModelForm):
+
+    class Meta:
+        model = User    
+        fields = ("first_name", 'last_name', 'email')
+
+
 class NewTopicForm(forms.ModelForm):
     message = forms.CharField(widget=forms.Textarea(attrs={'rows': 5, 'placeholder': 'What is on your mind?'}),
                               max_length=4000,
@@ -12,13 +19,13 @@ class NewTopicForm(forms.ModelForm):
 
     class Meta:
         model = Topic
-        fields = ['subject', 'message']
+        fields = ('subject', 'message')
 
 
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['message', ]
+        fields = ('message', )
 
 
 class BoardCreateForm(forms.ModelForm):

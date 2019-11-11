@@ -1,13 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from .models import Board, Topic, Post, BoardActions
-from .forms import NewTopicForm, PostForm, BoardCreateForm
+from .forms import NewTopicForm, PostForm, BoardCreateForm, UserUpdateForm
 from django.contrib.auth.decorators import login_required
 from django.views.generic import UpdateView, ListView
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.db.models import Count
-from accounts.models import User
+from accounts.models import User, Photo
 from django.urls import reverse_lazy
 from django.urls import reverse
 from django.http import JsonResponse
@@ -28,7 +28,8 @@ def export_users_csv(request, pk, topic_pk):
     writer = csv.writer(response)
     writer.writerow(['Author', 'Message', 'Date'])
 
-    posts = Post.objects.filter(topic=Topic.objects.get(pk=topic_pk)).values_list('topic', 'message', 'created_at')
+    posts = Post.objects.filter(topic=Topic.objects.get(
+        pk=topic_pk)).values_list('topic', 'message', 'created_at')
 
     for post in posts:
         writer.writerow(post)
@@ -40,7 +41,8 @@ def html_to_pdf_view(request, pk, topic_pk):
     topic = Topic.objects.get(pk=topic_pk)
     posts = Post.objects.filter(topic=topic)
     board = topic.board
-    html_string = render_to_string('includes/topic_posts_to_pdf.html', {'posts': posts, 'topic':topic, 'board':board})
+    html_string = render_to_string(
+        'includes/topic_posts_to_pdf.html', {'posts': posts, 'topic': topic, 'board': board})
 
     html = HTML(string=html_string)
     html.write_pdf(target='/tmp/mypdf.pdf')
@@ -78,7 +80,8 @@ class TopicListView(ListView):
 
     def get_queryset(self):
         self.board = get_object_or_404(Board, pk=self.kwargs.get('pk'))
-        queryset = self.board.topics.order_by('-last_updated').annotate(replies=Count('posts') - 1)
+        queryset = self.board.topics.order_by(
+            '-last_updated').annotate(replies=Count('posts') - 1)
         return queryset
 
 
@@ -98,7 +101,8 @@ class PostListView(ListView):
         return super().get_context_data(**kwargs)
 
     def get_queryset(self):
-        self.topic = get_object_or_404(Topic, board__pk=self.kwargs.get('pk'), pk=self.kwargs.get('topic_pk'))
+        self.topic = get_object_or_404(Topic, board__pk=self.kwargs.get(
+            'pk'), pk=self.kwargs.get('topic_pk'))
         queryset = self.topic.posts.order_by('created_at')
         return queryset
 
@@ -138,7 +142,8 @@ def reply_topic(request, pk, topic_pk):
             topic.last_updated = timezone.now()
             topic.save()
 
-            topic_url = reverse('topic_posts', kwargs={'pk': pk, 'topic_pk': topic_pk})
+            topic_url = reverse('topic_posts', kwargs={
+                                'pk': pk, 'topic_pk': topic_pk})
             topic_post_url = '{url}?page={page}#{id}'.format(
                 url=topic_url,
                 id=post.pk,
@@ -174,13 +179,16 @@ class PostUpdateView(UpdateView):
 @method_decorator(login_required, name='dispatch')
 class UserUpdateView(UpdateView):
     model = User
-    fields = ('first_name', 'last_name', 'email',)
+    form_class = UserUpdateForm
     template_name = 'my_account.html'
     success_url = reverse_lazy('my_account')
 
     def form_valid(self, form):
+        photo = Photo.objects.create(file=self.request.FILES['photo'], description='photo')
+        self.request.user.photo = photo
         form.save()
-        messages.success(self.request, 'Your account was updated successfully!')
+        messages.success(
+            self.request, 'Your account was updated successfully!')
         return redirect('my_account')
 
     def form_invalid(self, form):
@@ -218,7 +226,8 @@ def save_board_form(request, form, template_name, messagess, page, action):
         else:
             data['form_is_valid'] = False
     context = {'form': form, 'page': page}
-    data['html_form'] = render_to_string(template_name, context, request=request)
+    data['html_form'] = render_to_string(
+        template_name, context, request=request)
     return JsonResponse(data)
 
 
@@ -280,5 +289,12 @@ def board_delete(request, pk, page):
         })
     else:
         context = {'board': board, 'page': page}
-        data['html_form'] = render_to_string('includes/partial_board_delete.html', context=context, request=request)
+        data['html_form'] = render_to_string(
+            'includes/partial_board_delete.html', context=context, request=request)
     return JsonResponse(data)
+
+
+def delete_photo(request):
+    Photo.objects.get(pk=request.user.photo.pk).delete()
+    return redirect('my_account')
+    

@@ -19,7 +19,7 @@ class User(AbstractUser):
         ('B', 'Blogger')
     )
     user_type = models.CharField(max_length=1, choices=TYPE_CHOICES)
-    photo = models.ForeignKey(Photo, null=True, blank=True, on_delete=models.CASCADE)
+    photo = models.ForeignKey(Photo, null=True, blank=True, on_delete=models.SET_NULL)
 
 
 class CategoryDictionary(models.Model):
