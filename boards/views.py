@@ -20,8 +20,9 @@ from weasyprint import HTML
 import csv
 import json
 from PIL import Image
-
-
+from django.db.models.signals import post_save
+from accounts.tasks import send_email_task
+from django.dispatch import receiver
 
 def export_users_csv(request, pk, topic_pk):
     response = HttpResponse(content_type="text/csv")
@@ -130,6 +131,13 @@ def new_topic(request, pk):
     return render(request, 'new_topic.html', {'board': board, 'form': form})
 
 
+def send_email_notification(sender, instance, **kwargs):
+    send_email_task.delay(instance.topic.starter.email)
+    print(instance.topic.starter.email)
+
+post_save.connect(send_email_notification, sender=Post)
+
+
 @login_required
 def reply_topic(request, pk, topic_pk):
     topic = get_object_or_404(Topic, board__pk=pk, pk=topic_pk)
@@ -137,12 +145,14 @@ def reply_topic(request, pk, topic_pk):
         form = PostForm(request.POST)
         if form.is_valid():
             post = form.save(commit=False)
+
             post.topic = topic
             post.created_by = request.user
             post.save()
 
             topic.last_updated = timezone.now()
             topic.save()
+
 
             topic_url = reverse('topic_posts', kwargs={
                                 'pk': pk, 'topic_pk': topic_pk})
@@ -156,6 +166,8 @@ def reply_topic(request, pk, topic_pk):
     else:
         form = PostForm()
     return render(request, 'reply_topic.html', {'topic': topic, 'form': form})
+
+
 
 
 @method_decorator(login_required, name='dispatch')
@@ -186,17 +198,18 @@ class UserUpdateView(UpdateView):
     success_url = reverse_lazy('my_account')
 
     def form_valid(self, form):
-        photo = Photo.objects.create(file=self.request.FILES['photo'], description='photo')
-        x = float(self.request.POST.get('x'))
-        y = float(self.request.POST.get('y'))
-        h = float(self.request.POST.get('height'))
-        w = float(self.request.POST.get('width'))
+        if(self.request.FILES):
+            photo = Photo.objects.create(file=self.request.FILES['photo'], description='photo')
+            x = float(self.request.POST.get('x'))
+            y = float(self.request.POST.get('y'))
+            h = float(self.request.POST.get('height'))
+            w = float(self.request.POST.get('width'))
 
-        image = Image.open(photo.file)
-        cropped_image = image.crop((x, y, w+x, h+y))
-        resized_image = cropped_image.resize((200, 200), Image.ANTIALIAS)
-        resized_image.save(photo.file.path, "PNG")
-        self.request.user.photo = photo
+            image = Image.open(photo.file)
+            cropped_image = image.crop((x, y, w+x, h+y))
+            resized_image = cropped_image.resize((200, 200), Image.ANTIALIAS)
+            resized_image.save(photo.file.path, "PNG")
+            self.request.user.photo = photo
         form.save()
         messages.success(
             self.request, 'Your account was updated successfully!')

@@ -23,8 +23,9 @@ class ReaderSignUpForm(UserCreationForm):
     def save(self):
         user = super().save(commit=False)
         user.user_type = 'R'
-        user.save()
         email = self.cleaned_data.get('email')
+        user.email = email
+        user.save()
         send_email_task.delay(email)
         reader = Reader.objects.create(user=user, is_adult=self.cleaned_data.get('is_adult'))
         reader.interest.add(*self.cleaned_data.get('interests'))
