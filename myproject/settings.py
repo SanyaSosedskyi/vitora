@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 from django.contrib.messages import constants as messages
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -152,7 +151,6 @@ STATICFILES_DIRS = [
 ]
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_REDIRECT_URL = 'home'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 LOGIN_URL = 'login'
 AUTH_USER_MODEL = 'accounts.User'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -162,3 +160,11 @@ SOCIAL_AUTH_GITHUB_SECRET = "157576f23e6c6c02f96faed4b98c20b396ec87cf"
 SOCIAL_AUTH_FACEBOOK_KEY = 445123542656154
 SOCIAL_AUTH_FACEBOOK_SECRET = '548f997bd340c11aa1171038a78195be'
 GOOGLE_RECAPTCHA_SECRET_KEY = '6LeylsEUAAAAAIcaNBq9oUrbKpaGvk87UthhjZUj'
+CELERY_BROKER_URL = 'amqp://localhost'
+SENDGRID_API_KEY = os.getenv(
+    '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')
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'sanyasosedskyi'
+EMAIL_HOST_PASSWORD = 'SanyaSosedskiy1109200'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True

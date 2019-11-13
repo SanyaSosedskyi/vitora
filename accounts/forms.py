@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from accounts.models import User, Reader, Blogger, CategoryDictionary
 from django.db import transaction
-
+from .tasks import send_email_task
 
 class ReaderSignUpForm(UserCreationForm):
     email = forms.EmailField(widget=forms.EmailInput)
@@ -15,6 +15,7 @@ class ReaderSignUpForm(UserCreationForm):
         widget=forms.CheckboxInput,
     )
 
+
     class Meta(UserCreationForm.Meta):
         model = User
 
@@ -23,6 +24,8 @@ class ReaderSignUpForm(UserCreationForm):
         user = super().save(commit=False)
         user.user_type = 'R'
         user.save()
+        email = self.cleaned_data.get('email')
+        send_email_task.delay(email)
         reader = Reader.objects.create(user=user, is_adult=self.cleaned_data.get('is_adult'))
         reader.interest.add(*self.cleaned_data.get('interests'))
         return user
@@ -51,6 +54,8 @@ class BloggerSignUpForm(UserCreationForm):
         user.user_type = 'B'
         user.email = self.cleaned_data.get('email')
         user.save()
+        email = self.cleaned_data.get('email')
+        send_email_task.delay(email)
         blogger = Blogger.objects.create(user=user, birthday=self.cleaned_data.get('birthday'),
                                          country=self.cleaned_data.get('country'),
                                          city=self.cleaned_data.get('city'))
