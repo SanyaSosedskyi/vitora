@@ -17,7 +17,7 @@ kombu==4.6.6
 Markdown==3.1.1
 more-itertools==7.2.0
 oauthlib==3.1.0
-Pillow==6.2.1
+Pillow==8.3.2
 pycparser==2.19
 PyJWT==1.7.1
 Pyphen==0.9.5
