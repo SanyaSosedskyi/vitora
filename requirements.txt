@@ -8,7 +8,7 @@ cffi==1.13.2
 chardet==3.0.4
 cssselect2==0.2.2
 defusedxml==0.6.0
-Django==2.2.6
+Django==2.2.27
 django-widget-tweaks==1.4.5
 html5lib==1.0.1
 idna==2.8
